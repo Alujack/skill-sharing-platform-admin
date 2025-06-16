@@ -10,7 +10,6 @@ import { useCourses } from '@/hooks/courses/useCourses';
 const InstructorTable = () => {
   const { instructors, refetch } = useAllInstructorsQuery();
   const [search, setSearch] = useState('');
-  const { courses, loading, error } = useCourses(search);
   const { approveInstructor } = useApproveInstructor();
   // const { rejectInstructor } = useRejectInstructor();
   const [filterValues, setFilterValues] = useState({
