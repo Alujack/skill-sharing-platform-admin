@@ -3,7 +3,8 @@ import { Edit, Trash2, Check, X, MoreVertical } from "lucide-react";
 export const DynamicTableBody = ({ 
   data,
   columns,
-  actions = []
+  actions = [],
+  onSelect = () => {},
 }) => {
   // Default action icons mapping
   const actionIcons = {
@@ -17,7 +18,7 @@ export const DynamicTableBody = ({
   return (
     <tbody className="scroll-container">
       {data?.map((item) => (
-        <tr className="border-b border-gray-700" key={item.id}>
+        <tr className="border-b border-gray-700 cursor-pointer" key={item.id} onClick={() => onSelect(item.id)}>
           {columns.map((column) => (
             <td key={column.key} className="py-3 px-4">
               {column.render ? column.render(item) : item[column.key]}

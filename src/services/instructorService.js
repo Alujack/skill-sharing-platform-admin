@@ -1,14 +1,14 @@
 import axios from '@/lib/axios';
 
 // Get instructor dashboard data
-export const fetchInstructorDashboard = async () => {
-    const res = await axios.get('/instructor/dashboard');
+export const fetchInstructorDashboard = async (id) => {
+    const res = await axios.get(`/instructor/dashboard?instructorId=${id}`);
     return res.data;
 };
 
 // Get students enrolled in instructor's courses
-export const fetchInstructorStudents = async () => {
-    const res = await axios.get('/instructor/students');
+export const fetchInstructorStudents = async (id) => {
+    const res = await axios.get('/instructor/students?instructorId=' + id);
     return res.data;
 };
 

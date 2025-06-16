@@ -1,19 +1,15 @@
 'use client'
-import SideBar from "../../../components/sidebar";
+import InstructorSideBar from "@/components/sidebar/InstructorSidebar";
 
 export default function RootLayout({children}) {
   return (
-    <html lang="en">
-      <body
-      >
+
         <div className="flex h-screen">
-          <SideBar>
+          <InstructorSideBar>
             <div className=" rounded-lg dark:border-gray-700">
               <div className="flex-1 overflow-y-auto">{children}</div>
             </div>
-          </SideBar>
+          </InstructorSideBar>
         </div>
-      </body>
-    </html>
   );
 }

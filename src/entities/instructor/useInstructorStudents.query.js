@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchInstructorStudents } from '@/services/instructorService';
 
-export const useInstructorStudentsQuery = () => {
+export const useInstructorStudentsQuery = (id) => {
   const {
     data: students,
     isLoading,
@@ -9,8 +9,9 @@ export const useInstructorStudentsQuery = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ['instructorStudents'],
-    queryFn: fetchInstructorStudents,
+    queryKey: ['instructorStudents','id'],
+    queryFn: () =>fetchInstructorStudents(id),
+    enabled: !!id,
   });
 
   return { students, isLoading, isError, error, refetch };
