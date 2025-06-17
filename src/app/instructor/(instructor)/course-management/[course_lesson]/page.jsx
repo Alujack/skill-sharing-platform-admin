@@ -56,26 +56,6 @@ const LessonTable = () => {
     }
   ];
 
-  // Prepare filter options
-  const filterOptions = [
-    {
-      label: 'Category',
-      value: filters.categoryId,
-      options: categories?.map(category => ({
-        label: category.name,
-        value: category.id.toString()
-      })) || []
-    },
-    {
-      label: 'Instructor',
-      value: filters.instructorId,
-      options: instructors?.map(instructor => ({
-        label: instructor.name,
-        value: instructor.id.toString()
-      })) || []
-    }
-  ];
-
   const handleFilterChange = (label, value) => {
     setFilters(prev => ({
       ...prev,
@@ -91,16 +71,6 @@ const LessonTable = () => {
     });
   };
 
-  // Filter lessons based on search and filters
-  const filteredLessons = lessons?.filter(lesson => {
-    const matchesSearch = lesson.title.toLowerCase().includes(search.toLowerCase()) || 
-                         lesson.course?.title.toLowerCase().includes(search.toLowerCase());
-    
-    const matchesCategory = !filters.categoryId || lesson.course?.categoryId?.toString() === filters.categoryId;
-    const matchesInstructor = !filters.instructorId || lesson.course?.instructorId?.toString() === filters.instructorId;
-    
-    return matchesSearch && matchesCategory && matchesInstructor;
-  }) || [];
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   return (
@@ -130,30 +100,11 @@ const LessonTable = () => {
       />
 
       <div className="mt-6">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : error ? (
-          <div className="bg-red-900/50 p-4 rounded-lg">
-            <p className="text-red-400 font-medium">Error: {error}</p>
-            <button 
-              onClick={refresh}
-              className="mt-2 px-4 py-2 bg-red-700 hover:bg-red-600 rounded-md"
-            >
-              Retry
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="mb-4 text-sm text-gray-400">
-              Showing {filteredLessons.length} of {lessons.length} lessons
-            </div>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse bg-gray-800 rounded-lg overflow-hidden">
                 <DynamicTableHead headers={tableHeaders} />
                 <DynamicTableBody 
-                  data={filteredLessons}
+                  data={lessons.data}
                   columns={tableColumns}
                   actions={[
                     {
@@ -165,8 +116,6 @@ const LessonTable = () => {
                 />
               </table>
             </div>
-          </>
-        )}
       </div>
     </div>
   );

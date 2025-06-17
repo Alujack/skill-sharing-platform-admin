@@ -94,6 +94,7 @@ const filterOptions = [
         filters={filterOptions} 
         onFilterChange={handleFilterChange} 
         onReset={handleResetFilters}
+        isFilter={true}
       />
 
       <div className="mt-6">

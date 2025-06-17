@@ -105,6 +105,7 @@ const InstructorTable = () => {
         filters={filters}
         onFilterChange={handleFilterChange}
         onReset={handleReset}
+        isFilter={true}
       />
 
       <div className="mt-6">

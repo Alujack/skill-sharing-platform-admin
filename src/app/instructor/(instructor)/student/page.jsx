@@ -99,9 +99,6 @@ const StudentTable = () => {
        <FilterBar
         search={search}
         setSearch={setSearch}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onReset={handleReset}
       />
 
       <div className="mt-6">

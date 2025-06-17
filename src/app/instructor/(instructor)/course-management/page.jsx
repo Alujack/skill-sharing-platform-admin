@@ -12,25 +12,17 @@ import { useRouter } from 'next/navigation';
 const CourseTable = () => {
     const router = useRouter();
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState({
-    categoryId: '',
-    isApproved: '',
-    instructorId: ''
-  });
   const userString = localStorage.getItem('user');
+  const {}
   const user = userString ? JSON.parse(userString) : null;
-  console.log('User====', user);
 
   const { courses, loading, error } = useInstructorCoursesQuery(4);
-  console.log('Courses:', courses);
 
   const { instructors} = useApprovedInstructorsQuery();
   const { categories } = useFetchAllCategories();
-  const tableHeaders = ['ID', 'Title', 'Category', 'Instructor', 'Price'];
+  const tableHeaders = ['ID', 'Title', 'Category', 'Price', 'Action'];
   const handleSelectCourse = (courseId) => {
-    console.log('Selected Course ID:', courseId);
     router.push(`/instructor/course-management/${courseId}`);
-    // You can implement further actions here, like navigating to course details
   }
 
   const tableColumns = [
@@ -41,35 +33,26 @@ const CourseTable = () => {
       render: (item) => item.category?.name || 'N/A'
     },
     { 
-      key: 'instructor.name',
-      render: (item) => item.instructor?.name || 'N/A'
-    },
-    { 
       key: 'price',
       render: (item) => `$${item.price?.toFixed(2) || '0.00'}`
     }
   ];
-
-  // Prepare filter options
-const filterOptions = [
-  {
-    label: 'Category',
-    value: filters.categoryId,
-    options:categories?.map(category => ({
-      label: category.name,
-      value: category.id.toString()
-    })) || []
-  },
-  {
-    label: 'Instructor',
-    value: filters.instructorId,
-    options: instructors?.map(instructor => ({
-      label: instructor.name,
-      value: instructor.id.toString()
-    })) || []
-  }
-];
-  console.log('Filter Options:', filterOptions);
+   const tableActions = [
+    {
+      icon: 'reject',
+      label: 'delete',
+      handler: (instructor) => !instructor.isApproved && rejectInstructor(instructor.id),
+      disabled: (instructor) => instructor.isApproved,
+      color: 'red'
+    },
+    {
+      icon: 'update',
+      label: 'update',
+      handler: (course) => !instructor.isApproved && rejectInstructor(instructor.id),
+      disabled: (instructor) => instructor.isApproved,
+      color: 'red'
+    }
+  ];
 
   const handleFilterChange = (label, value) => {
     setFilters(prev => {
@@ -103,9 +86,6 @@ const filterOptions = [
       <FilterBar 
         search={search} 
         setSearch={setSearch} 
-        filters={filterOptions} 
-        onFilterChange={handleFilterChange} 
-        onReset={handleResetFilters}
       />
 
       <div className="mt-6">
@@ -119,7 +99,7 @@ const filterOptions = [
             <DynamicTableBody 
               data={courses}
               columns={tableColumns}
-              actions={[]} 
+              actions={tableActions} 
               onSelect={handleSelectCourse}
             />
           </table>

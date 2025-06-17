@@ -1,13 +1,13 @@
 import React from 'react';
 import { Filter, Search } from 'lucide-react';
 
-const FilterBar = ({ search, setSearch, filters = [], onFilterChange, onReset }) => {
+const FilterBar = ({ search, setSearch, filters = [], onFilterChange, onReset, isfilter }) => {
   return (
     <div className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
       <div className="flex space-x-4 items-center">
-        <button className="flex items-center bg-gray-700 px-4 py-2 rounded-md">
+       {isfilter && <button className="flex items-center bg-gray-700 px-4 py-2 rounded-md">
           <Filter className="w-5 h-5 mr-2" /> Filter By
-        </button>
+        </button>}
 
         {/* Render dynamic filters */}
         {filters.map(({ label, options, value }, index) => (
@@ -33,9 +33,9 @@ const FilterBar = ({ search, setSearch, filters = [], onFilterChange, onReset })
           </select>
         ))}
 
-        <button className="text-orange-500" onClick={onReset}>
+        {isfilter &&<button className="text-orange-500" onClick={onReset}>
           Reset Filter
-        </button>
+        </button>}
       </div>
 
       <div className="flex bg-gray-700 px-4 py-2 rounded-md items-center">
