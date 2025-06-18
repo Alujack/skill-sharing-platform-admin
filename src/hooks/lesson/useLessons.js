@@ -49,7 +49,6 @@ export const useLessons = (courseId = null) => {
   const deleteLesson = async (lessonId) => {
     try {
       await LessonService.deleteLesson(lessonId);
-      setLessons(prev => prev.filter(lesson => lesson.id !== lessonId));
     } catch (err) {
       throw err;
     }

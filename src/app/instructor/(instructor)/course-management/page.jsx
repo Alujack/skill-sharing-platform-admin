@@ -1,29 +1,71 @@
 "use client";
 import { useState } from 'react';
-import { useCourses } from '@/hooks/courses/useCourses';
 import FilterBar from '@/components/commons/FilterAndSeacrh';
 import { DynamicTableHead } from '@/components/commons/DynamicTableHead';
 import { DynamicTableBody } from '@/components/commons/DynamicTableBody';
 import { useApprovedInstructorsQuery } from '@/entities/useFetchApprovedInstructor.query';
-import { useFetchAllCategories } from '@/entities/category/useFetchAllcategories.query';
 import {useInstructorCoursesQuery} from '@/entities/instructor/useInstructorCourses.query';
+import { useCourses } from '@/hooks/courses/useCourseHook';
 import { useRouter } from 'next/navigation';
-
+import CreateCourseModal from '@/components/course/CreateCourseModal'
 const CourseTable = () => {
-    const router = useRouter();
+  const router = useRouter();
   const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState({
+    categoryId: '',
+    isApproved: '',
+    instructorId: ''
+  });
+  
   const userString = localStorage.getItem('user');
-  const {}
   const user = userString ? JSON.parse(userString) : null;
-
-  const { courses, loading, error } = useInstructorCoursesQuery(4);
-
+  
+  const { courses, loading, error } = useInstructorCoursesQuery('4' || '4');
   const { instructors} = useApprovedInstructorsQuery();
-  const { categories } = useFetchAllCategories();
+  const [isModalOpen, setIsModalOpen]=useState(false);
+
+  const { createCourse, updateCourse, deleteCourse } = useCourses();
+  
   const tableHeaders = ['ID', 'Title', 'Category', 'Price', 'Action'];
+  const [openModal, setOpenModal] = useState(false);
+  
   const handleSelectCourse = (courseId) => {
     router.push(`/instructor/course-management/${courseId}`);
   }
+
+  const handleDeleteCourse = async (courseId) => {
+    if (window.confirm('Are you sure you want to delete this course?')) {
+      try {
+        await deleteCourse(courseId);
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to delete course:', error);
+        alert('Failed to delete course. Please try again.');
+      }
+    }
+  };
+
+  const handleUpdateCourse = async (courseId, courseData) => {
+    try {
+      await updateCourse(courseId, courseData);
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to update course:', error);
+      alert('Failed to update course. Please try again.');
+    }
+  };
+
+  const handleCreateCourse = async (courseData) => {
+    try {
+      await createCourse(courseData);
+      setOpenModal(false);
+      // Refresh your data
+      window.location.reload(); 
+    } catch (error) {
+      console.error('Failed to create course:', error);
+      alert('Failed to create course. Please try again.');
+    }
+  };
 
   const tableColumns = [
     { key: 'id' },
@@ -37,20 +79,19 @@ const CourseTable = () => {
       render: (item) => `$${item.price?.toFixed(2) || '0.00'}`
     }
   ];
-   const tableActions = [
+  
+  const tableActions = [
     {
       icon: 'reject',
       label: 'delete',
-      handler: (instructor) => !instructor.isApproved && rejectInstructor(instructor.id),
-      disabled: (instructor) => instructor.isApproved,
+      handler: (course) => handleDeleteCourse(course.id),
       color: 'red'
     },
     {
       icon: 'update',
       label: 'update',
-      handler: (course) => !instructor.isApproved && rejectInstructor(instructor.id),
-      disabled: (instructor) => instructor.isApproved,
-      color: 'red'
+      handler: (course) => router.push(`/instructor/course-management/edit/${course.id}`),
+      color: 'blue'
     }
   ];
 
@@ -81,7 +122,15 @@ const CourseTable = () => {
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
-      <h2 className="text-3xl font-semibold mb-6">Courses</h2>
+      <div className="flex justify-between">
+        <h2 className="text-3xl font-semibold mb-6">Courses</h2>
+        <button 
+          className="text-xl font-semibold bg-blue-700 py-3 px-6 mb-2" 
+          onClick={() => setIsModalOpen(true)}
+        >
+          Create new Course
+        </button>
+      </div>
 
       <FilterBar 
         search={search} 
@@ -105,6 +154,13 @@ const CourseTable = () => {
           </table>
         )}
       </div>
+
+      {/* Modal for creating course */}
+       <CreateCourseModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        instructorId={"4"}
+      />
     </div>
   );
 };

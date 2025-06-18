@@ -3,16 +3,18 @@ import { useState } from 'react';
 import FilterBar from '@/components/commons/FilterAndSeacrh';
 import { DynamicTableHead } from '@/components/commons/DynamicTableHead';
 import { DynamicTableBody } from '@/components/commons/DynamicTableBody';
-import { useApprovedInstructorsQuery } from '@/entities/useFetchApprovedInstructor.query';
-import { useFetchAllCategories } from '@/entities/category/useFetchAllcategories.query';
 import { useLessonCoursesQuery } from '@/entities/lesson/useLessonCourses.query';
 import { useParams } from 'next/navigation';
-import CreateLessonForm from 'components/lesson/createLessonForm';
+import CreateLessonForm from '@/components/lesson/createLessonForm';
+import UpdateLessonForm from '@/components/lesson/UpdateLessonForm';
+import {useLessons }from "@/hooks/lesson/useLessons"
 
 const LessonTable = () => {
   const params = useParams();
   const courseId = params.course_lesson;
-  console.log('Course ID:', courseId);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
+  const [lessonSelected , setLessonSelected] = useState(null);
 
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({
@@ -20,15 +22,12 @@ const LessonTable = () => {
     instructorId: ''
   });
 
-  // Using our new hook to fetch lessons
-  const { lessons, loading, error, refresh } = useLessonCoursesQuery(courseId);
-  console.log('Lessons:', lessons);
-
-  const { instructors } = useApprovedInstructorsQuery();
-  const { categories } = useFetchAllCategories();
+  const { lessons, refresh } = useLessonCoursesQuery(courseId);
+  console.log('lesson ===', lessons)
+  const { deleteLesson } = useLessons();
 
   // Table configuration
-  const tableHeaders = ['ID', 'Title', 'Video URL', 'Course', 'Course Price', 'Actions'];
+  const tableHeaders = ['ID', 'Title', 'Video URL', 'Course', 'Actions'];
   
   const tableColumns = [
     { key: 'id' },
@@ -49,10 +48,6 @@ const LessonTable = () => {
     { 
       key: 'course.title',
       render: (item) => item.course?.title || 'N/A'
-    },
-    { 
-      key: 'course.price',
-      render: (item) => `$${item.course?.price?.toFixed(2) || '0.00'}`
     }
   ];
 
@@ -71,7 +66,44 @@ const LessonTable = () => {
     });
   };
 
-  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const handleUpdateLesson = (value) => {
+    setLessonSelected(value)
+    setShowUpdateForm(true)
+    
+
+  }
+  const handleDeleteLesson = (value) =>{
+      if (window.confirm('Are you sure you want to delete this lesson?')) {
+      try {
+        deleteLesson(value.id)
+        window.location.reload(); 
+      } catch (error) {
+        console.error('Failed to delete course:', error);
+        alert('Failed to delete course. Please try again.');
+      }
+    }
+   
+
+
+  }
+
+  const tableActions = [
+ 
+    {
+      icon: 'reject',
+      label: 'Delete',
+      handler: (lesson) => handleDeleteLesson(lesson),
+      color: 'red'
+    }, {
+      icon: 'update',
+      label: 'Approve Instructor',
+      handler: (lesson) => handleUpdateLesson(lesson),
+      color: 'green'
+    },
+  ];
+
+
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -80,10 +112,20 @@ const LessonTable = () => {
           courseId={courseId} 
           onClose={() => setShowCreateForm(false)}
           onSuccess={(newLesson) => {
-          console.log('New lesson created:', newLesson);
+          refresh();
           }}
         />
       )}
+       {showUpdateForm && (
+        <UpdateLessonForm
+          onClose={() => setShowUpdateForm(false)}
+          onSuccess={(newLesson) => {
+            refresh()
+          }}
+          lesson={lessonSelected}
+        />
+      )}
+
        <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-semibold">Lessons</h2>
         <button
@@ -94,11 +136,6 @@ const LessonTable = () => {
         </button>
       </div>
 
-      <FilterBar 
-        search={search} 
-        setSearch={setSearch} 
-      />
-
       <div className="mt-6">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse bg-gray-800 rounded-lg overflow-hidden">
@@ -106,13 +143,7 @@ const LessonTable = () => {
                 <DynamicTableBody 
                   data={lessons.data}
                   columns={tableColumns}
-                  actions={[
-                    {
-                      label: 'Delete',
-                      onClick: (item) => console.log('Delete', item.id),
-                      className: 'text-red-400 hover:text-red-300'
-                    }
-                  ]} 
+                  actions={tableActions} 
                 />
               </table>
             </div>

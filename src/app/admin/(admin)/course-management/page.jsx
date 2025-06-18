@@ -5,7 +5,7 @@ import FilterBar from '@/components/commons/FilterAndSeacrh';
 import { DynamicTableHead } from '@/components/commons/DynamicTableHead';
 import { DynamicTableBody } from '@/components/commons/DynamicTableBody';
 import { useApprovedInstructorsQuery } from '@/entities/useFetchApprovedInstructor.query';
-import { useFetchAllCategories } from '../../../../entities/category/useFetchAllcategories.query';
+import { useFetchAllCategories } from '@/entities/category/useFetchAllcategories.query';
 
 const CourseTable = () => {
   const [search, setSearch] = useState('');
@@ -16,6 +16,7 @@ const CourseTable = () => {
   });
 
   const { courses, loading, error } = useCourses(search, filters);
+  console.log(courses)
 
   const { instructors} = useApprovedInstructorsQuery();
   const { categories } = useFetchAllCategories();

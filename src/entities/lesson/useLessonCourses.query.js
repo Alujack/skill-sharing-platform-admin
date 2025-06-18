@@ -1,37 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { LessonService } from '@/services/lessonService';
 
-export const useLessonCoursesQuery = (courseId = null) => {
-  const [lessons, setLessons] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const fetchLessons = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      let data;
-      if (courseId) {
-        data = await LessonService.getLessonsByCourse(courseId);
-      } else {
-        data = await LessonService.getAllLessons();
+export const useLessonCoursesQuery = (courseId) => {
+  const {
+    data: lessons = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['lessons', { courseId }],
+    queryFn: async () => {
+      if (!courseId) {
+        return await LessonService.getAllLessons();
       }
-      setLessons(data);
-    } catch (err) {
-      setError(err.message || 'Failed to fetch lessons');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchLessons();
-  }, [courseId]);
+      return await LessonService.getLessonsByCourse(courseId);
+    },
+    enabled: !!courseId,
+  });
 
   return {
     lessons,
-    loading,
+    isLoading,
+    isError,
     error,
-    refresh: fetchLessons
+    refresh: refetch,
   };
 };

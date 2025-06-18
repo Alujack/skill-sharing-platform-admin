@@ -23,17 +23,13 @@ const StudentTable = () => {
   });
 
   // Define your table structure here
-  const tableHeaders = ['ID', 'Student Name', 'Email', 'Phone', 'User Status', 'Actions'];
+  const tableHeaders = ['ID', 'Student Name', 'Email', 'Phone'];
   
   const tableColumns = [
     { key: 'id' },
     { key: 'name' },
     { key: 'email' },
-    { key: 'phone' },
-    { 
-      key: 'isVerified',
-      render: (item) => item.isVerified ? 'Verified' : 'Pending' 
-    }
+    { key: 'phone' }
   ];
   const filters = [
     {
@@ -45,12 +41,7 @@ const StudentTable = () => {
       label: 'Course',
       options: ['Course 1', 'Course 2'],
       value: filterValues.Course,
-    },
-    {
-      label: 'Status',
-      options: ['Active', 'Inactive'],
-      value: filterValues.Status,
-    },
+    }
   ];
 
   const handleFilterChange = (label, value) => {
