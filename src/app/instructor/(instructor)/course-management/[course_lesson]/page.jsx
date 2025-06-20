@@ -127,7 +127,7 @@ const LessonTable = () => {
       )}
 
        <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-semibold">Lessons</h2>
+        <h2 className="text-3xl font-semibold">Lessons in course id = {courseId} </h2>
         <button
           onClick={() => setShowCreateForm(true)}
           className="px-4 py-2 bg-blue-600 rounded-md text-white hover:bg-blue-700 transition"

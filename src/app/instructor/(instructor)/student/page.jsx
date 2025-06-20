@@ -46,7 +46,8 @@ const StudentTable = () => {
     refetch();
   };
   const handleSelectStudent = (value)=>{
-    setSelectStudent(value)
+    const student = students.find((stu)=>stu.id === value);
+    setSelectStudent(student)
     setIsOpenStudentProfile(true)
   }
 
