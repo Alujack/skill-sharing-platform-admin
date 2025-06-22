@@ -8,6 +8,7 @@ import {useInstructorCoursesQuery} from '@/entities/instructor/useInstructorCour
 import { useCourses } from '@/hooks/courses/useCourseHook';
 import { useRouter } from 'next/navigation';
 import CreateCourseModal from '@/components/course/CreateCourseModal'
+import { useAuth } from '@/context/authContext';
 const CourseTable = () => {
   const router = useRouter();
   const [search, setSearch] = useState('');
@@ -17,10 +18,9 @@ const CourseTable = () => {
     instructorId: ''
   });
   
-  const userString = localStorage.getItem('user');
-  const user = userString ? JSON.parse(userString) : null;
+  const {user} = useAuth();
   
-  const { courses, loading, error } = useInstructorCoursesQuery('4' || '4');
+  const { courses, loading, error } = useInstructorCoursesQuery(user?.id);
   const { instructors} = useApprovedInstructorsQuery();
   const [isModalOpen, setIsModalOpen]=useState(false);
 
@@ -59,7 +59,6 @@ const CourseTable = () => {
     try {
       await createCourse(courseData);
       setOpenModal(false);
-      // Refresh your data
       window.location.reload(); 
     } catch (error) {
       console.error('Failed to create course:', error);
@@ -159,7 +158,6 @@ const CourseTable = () => {
        <CreateCourseModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
-        instructorId={"4"}
       />
     </div>
   );

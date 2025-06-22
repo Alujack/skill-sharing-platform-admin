@@ -14,7 +14,7 @@ export const logout = async ()=> {
   await axiosInstance.post('auth/logout');
 };
 
-export const getCurrentUser = async () => {
-  const res = await axiosInstance.get('/auth/me');
+export const getCurrentUser = async (token) => {
+  const res = await axiosInstance.get('/auth/me' );
   return res.data;
 };

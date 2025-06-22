@@ -7,21 +7,17 @@ const AuthContext = createContext(undefined);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Load user on mount
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await getCurrentUser();
-        setUser(userData);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadUser();
-  }, []);
+ useEffect(() => {
+  // This code only runs on the client side
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const userString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+  const user_local = userString ? JSON.parse(userString) : null;
+  
+  if (token && user_local) {
+    setUser(user_local);
+  }
+  setLoading(false);
+}, []);
 
   const loginUser = async (email, password) => {
     const data = await login(email, password);

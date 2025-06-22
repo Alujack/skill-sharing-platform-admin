@@ -5,11 +5,38 @@ import { useDashboardStore } from '@/store/dashboardStore';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Card from '@/components/ui/Card';
 import { Users, GraduationCap, BookOpen, TrendingUp } from 'lucide-react';
-
+import { useRouter } from 'next/navigation';
 
 const analyticsData = Array.from({ length: 60 }, (_, i) => ({ name: `${i * 1000}`, value: Math.random() * 100 }));
 
 export default function Dashboard() {
+    const router = useRouter();
+  
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      const userString = localStorage.getItem('user');
+      const user = userString ? JSON.parse(userString) : null;
+  
+      const publicRoutes = ['/auth/signin', '/auth/signup'];
+      const currentPath = window?.location?.pathname;
+  
+      if (!token && !publicRoutes.includes(currentPath)) {
+        router.push('/auth/signin');
+        return;
+      }
+  
+      if (user && token) {
+        const role = user.role;
+        console.log('User Role:', role);
+  
+        // Avoid redirecting if already at correct path
+        if (role === 'admin' && !currentPath.startsWith('/admin')) {
+          router.push('/admin');
+        } else if (role === 'Instructor' && !currentPath.startsWith('/instructor')) {
+          router.push('/instructor');
+        }
+      }
+    }, [router]);
   const { data, loading, error, fetchCounts } = useDashboardStore();
   console.log(data)
 

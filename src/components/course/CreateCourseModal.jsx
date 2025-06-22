@@ -2,19 +2,26 @@ import { useState, useEffect } from 'react';
 import { useCourses } from '@/hooks/courses/useCourseHook';
 import { useCategories } from '@/hooks/useCategories';
 import {useInstructorCoursesQuery} from '@/entities/instructor/useInstructorCourses.query';
-const CreateCourseModal = ({ isOpen, onClose, instructorId }) => {
-  const { refetch} = useInstructorCoursesQuery(instructorId);
+const CreateCourseModal = ({ isOpen, onClose}) => {
   const { createCourse } = useCourses();
   const { categories } = useCategories();
-  const [formData, setFormData] = useState({
+  const [user, setUser] = useState();
+   useEffect(() => {
+      const token = localStorage.getItem('token');
+      const userString = localStorage.getItem('user');
+      const user = userString ? JSON.parse(userString) : null;
+      setUser(user);
+   },[])
+    const { refetch} = useInstructorCoursesQuery(user?.id);
+    const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: 49.99,
-    categoryId: '',
-    instructorId: instructorId
+    categoryId: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  
 
   useEffect(() => {
     if (categories.length > 0 && !formData.categoryId) {
@@ -43,7 +50,7 @@ const CreateCourseModal = ({ isOpen, onClose, instructorId }) => {
       await createCourse({
         ...formData,
         categoryId: Number(formData.categoryId),
-        instructorId: Number(formData.instructorId)
+        instructorId: user?.id
       });
       onClose();
       // Reset form
