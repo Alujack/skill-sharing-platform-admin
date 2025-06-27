@@ -77,13 +77,6 @@ const InstructorTable = () => {
       handler: (instructor) => !instructor.isApproved && approveInstructorStatus(instructor.user.id),
       disabled: (instructor) => instructor.isApproved,
       color: 'green'
-    },
-    {
-      icon: 'reject',
-      label: 'Reject Instructor',
-      handler: (instructor) => !instructor.isApproved && rejectInstructor(instructor.id),
-      disabled: (instructor) => instructor.isApproved,
-      color: 'red'
     }
   ];
 

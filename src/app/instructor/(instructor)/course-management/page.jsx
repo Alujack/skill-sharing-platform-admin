@@ -81,7 +81,7 @@ const CourseTable = () => {
   
   const tableActions = [
     {
-      icon: 'reject',
+      icon: 'delete',
       label: 'delete',
       handler: (course) => handleDeleteCourse(course.id),
       color: 'red'

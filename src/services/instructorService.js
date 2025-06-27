@@ -14,7 +14,7 @@ export const fetchInstructorStudents = async (id) => {
 
 // Approve an instructor (admin only)
 export const approveInstructor = async (userId) => {
-    const res = await axios.put(`/instructor/approve?userId=${userId}`);
+    const res = await axios.put(`/instructor/approve`, { "userId": userId });
     return res.data;
 };
 

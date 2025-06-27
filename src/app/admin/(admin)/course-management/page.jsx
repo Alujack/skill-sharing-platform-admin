@@ -17,6 +17,7 @@ const CourseTable = () => {
 
   const { courses, loading, error } = useCourses(search, filters);
   console.log(courses)
+  const { createCourse, updateCourse, deleteCourse } = useCourses();
 
   const { instructors} = useApprovedInstructorsQuery();
   const { categories } = useFetchAllCategories();
@@ -36,6 +37,41 @@ const CourseTable = () => {
     { 
       key: 'price',
       render: (item) => `$${item.price?.toFixed(2) || '0.00'}`
+    }
+  ];
+   const handleDeleteCourse = async (courseId) => {
+    if (window.confirm('Are you sure you want to delete this course?')) {
+      try {
+        await deleteCourse(courseId);
+        window.location.reload();
+      } catch (error) {
+        console.error('Failed to delete course:', error);
+        alert('Failed to delete course. Please try again.');
+      }
+    }
+  };
+
+  const handleUpdateCourse = async (courseId, courseData) => {
+    try {
+      await updateCourse(courseId, courseData);
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to update course:', error);
+      alert('Failed to update course. Please try again.');
+    }
+  };
+    const tableActions = [
+    {
+      icon: 'delete',
+      label: 'delete',
+      handler: (course) => handleDeleteCourse(course.id),
+      color: 'red'
+    },
+    {
+      icon: 'update',
+      label: 'update',
+      handler: (course) => router.push(`/instructor/course-management/edit/${course.id}`),
+      color: 'blue'
     }
   ];
 
@@ -109,7 +145,7 @@ const filterOptions = [
             <DynamicTableBody 
               data={courses}
               columns={tableColumns}
-              actions={[]} 
+              actions={tableActions} 
             />
           </table>
         )}
