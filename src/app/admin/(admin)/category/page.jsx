@@ -6,72 +6,108 @@ import { useFetchAllCategories } from '@/entities/category/useFetchAllcategories
 import CreateCategoryModal from '@/components/category/CreateCategoryModal';
 import { useDeleteCategory } from '@/hooks/useDeleteCategories';
 import UpdateCategoryModal from '@/components/category/UpdateCategoryModal';
+import SuccessModal from '@/components/SuccessModal';
 
 const CategoryTable = () => {
-  const { categories, loading, error } = useFetchAllCategories();
-  const {ondeleteCategory} = useDeleteCategory();
+  const { categories, loading, error, refetch } = useFetchAllCategories();
+  const { onDeleteCategory } = useDeleteCategory();
   const [showCreateForm, setShowCreateForm] = useState(false);  
-  const [category, setCategory] = useState();
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [openUpdate, setOpenUpdate] = useState(false);
-  const tableHeaders = ['ID', 'Category Name', 'Action'];
+  const [successMessage, setSuccessMessage] = useState(null);
 
-const handleUpdateCategory = (value) =>{
-  console.log('value ==', value);
-  setCategory(value);
-  setOpenUpdate(true);
-}
+  const tableHeaders = ['ID', 'Category Name', 'Actions'];
+
+  const handleUpdateCategory = (category) => {
+    setSelectedCategory(category);
+    setOpenUpdate(true);
+  };
+
+  const handleDeleteCategory = async (category) => {
+    try {
+      await onDeleteCategory(category.id);
+      setSuccessMessage('Category deleted successfully!');
+      refetch()
+    } catch (error) {
+      console.log(error);
+      setSuccessMessage("cannot delete categories that assoicate with course");
+    }
+  };
+
   const tableColumns = [
     { key: 'id' },
-    { key: 'name' }
+    { 
+      key: 'name',
+      render: (item) => <span className="font-medium">{item.name}</span>
+    }
   ];
-   const tableActions = [
+
+  const tableActions = [
     {
-      icon: 'cross',
-      label: 'delete',
-      handler: (category) =>  ondeleteCategory(category.id),
-      color: 'red'
+     
+      icon: 'update',
+      label: 'Edit',
+      handler: (category) => handleUpdateCategory(category),
     },
     {
-      icon: 'edit',
-      label: 'edit',
-      handler: (category) => handleUpdateCategory(category),
-      color: 'red'
+      icon: 'delete',
+      label: 'Delete',
+      handler: (category) => handleDeleteCategory(category),
     }
   ];
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
-        <CreateCategoryModal 
+      <CreateCategoryModal 
         isOpen={showCreateForm} 
-        onClose={() => setShowCreateForm(false)} 
+        onClose={() => setShowCreateForm(false)}
+        onSuccess={() => {
+          setSuccessMessage('Category created successfully!');
+          refetch();
+        }}
       />
+      
       <UpdateCategoryModal
         isOpen={openUpdate} 
-        category={category}
-        onClose={() => setOpenUpdate(false)} 
+        category={selectedCategory}
+        onClose={() => setOpenUpdate(false)}
+        onSuccess={() => {
+          setSuccessMessage('Category updated successfully!');
+          refetch();
+        }}
       />
-        <div className="flex justify-between">
-      <h2 className="text-3xl font-semibold mb-6">Categories</h2>
-         <button
+
+      <SuccessModal
+        isOpen={!!successMessage}
+        message={successMessage}
+        onClose={() => setSuccessMessage(null)}
+      />
+
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Categories</h2>
+        <button
           onClick={() => setShowCreateForm(true)}
-          className="px-4 py-2 bg-blue-600 rounded-md text-white hover:bg-blue-700 transition"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-white transition-colors flex items-center gap-2"
         >
-          Create New Category
+          <span>+</span> Create New
         </button>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 bg-gray-800 rounded-lg overflow-hidden shadow-lg">
         {loading ? (
-          <p>Loading...</p>
+          <div className="p-8 text-center">Loading categories...</div>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <div className="p-4 bg-red-900/30 text-red-300 rounded-md">
+            Error: {error.message}
+          </div>
         ) : (
-          <table className="w-full border-collapse bg-gray-800 rounded-lg overflow-hidden">
+          <table className="w-full">
             <DynamicTableHead headers={tableHeaders} />
             <DynamicTableBody 
               data={categories}
               columns={tableColumns}
-              actions={tableActions} 
+              actions={tableActions}
+              actionColumnClass="w-32" // Give actions column fixed width
             />
           </table>
         )}

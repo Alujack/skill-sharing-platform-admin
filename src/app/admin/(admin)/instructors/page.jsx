@@ -5,13 +5,17 @@ import { useApproveInstructor } from "@/hooks/instructors/useApproveInstructor.a
 import { DynamicTableHead } from '@/components/commons/DynamicTableHead';
 import { DynamicTableBody } from '@/components/commons/DynamicTableBody';
 import FilterBar from '@/components/commons/FilterAndSeacrh';
-import { useCourses } from '@/hooks/courses/useCourses';
+import UpdateInstructorModal from '@/components/instructor/updateInstructorModal';
+import SuccessModal from '@/components/SuccessModal';
+
 
 const InstructorTable = () => {
   const { instructors, refetch } = useAllInstructorsQuery();
   const [search, setSearch] = useState('');
   const { approveInstructor } = useApproveInstructor();
-  // const { rejectInstructor } = useRejectInstructor();
+  const [instructor, setInstructor] = useState();
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [filterValues, setFilterValues] = useState({
     Field: '',
     Course: '',
@@ -66,6 +70,11 @@ const InstructorTable = () => {
       value: filterValues.Status,
     },
   ];
+  const handleUpdate = (value)=>{
+    setInstructor(value);
+    setOpenUpdate(true)
+    refetch();
+  }
 
   
 
@@ -76,6 +85,12 @@ const InstructorTable = () => {
       label: 'Approve Instructor',
       handler: (instructor) => !instructor.isApproved && approveInstructorStatus(instructor.user.id),
       disabled: (instructor) => instructor.isApproved,
+      color: 'green'
+    },
+    {
+      icon: 'edit',
+      label: 'Edit Instructor',
+      handler: (instructor) => handleUpdate(instructor),
       color: 'green'
     }
   ];
@@ -90,15 +105,28 @@ const InstructorTable = () => {
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
+      <UpdateInstructorModal
+        isOpen={openUpdate} 
+        instructor={instructor}
+        onClose={() => setOpenUpdate(false)}
+        onSuccess={() => {
+          setSuccessMessage('Instructor updated successfully!');
+          refetch();
+        }}
+      />
+        <SuccessModal
+        isOpen={!!successMessage}
+        message={successMessage}
+        onClose={() => setSuccessMessage(null)}
+      />
+      
       <h2 className="text-3xl font-semibold mb-6">Instructors</h2>
 
         <FilterBar
         search={search}
         setSearch={setSearch}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onReset={handleReset}
-        isFilter={true}
+
+      
       />
 
       <div className="mt-6">

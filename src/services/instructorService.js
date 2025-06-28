@@ -47,3 +47,13 @@ export const fetchAllInstructors = async () => {
     const res = await axios.get('/instructor/all');
     return res.data.data;
 };
+export const deleteInstructor = async (id) => {
+    const res = await axios.delete(`/user/${id}`);
+    return res.data.data;
+}
+export const updateInstructor = async (id, data) => {
+    console.log("data ==", data);
+    const res = await axios.put(`instructor/${id}`, data);
+    console.log("res", res.data);
+    return res.data;
+}

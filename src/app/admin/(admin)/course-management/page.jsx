@@ -145,7 +145,7 @@ const filterOptions = [
             <DynamicTableBody 
               data={courses}
               columns={tableColumns}
-              actions={tableActions} 
+              // actions={tableActions} 
             />
           </table>
         )}

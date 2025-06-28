@@ -8,6 +8,7 @@ import StudentUpdateModal from "@/components/students/StudentUpdateModal";
 import FilterBar from '@/components/commons/FilterAndSeacrh';
 import { DynamicTableHead } from '@/components/commons/DynamicTableHead';
 import { DynamicTableBody } from '@/components/commons/DynamicTableBody';
+import SuccessModal from '@/components/SuccessModal';
 
 const StudentTable = () => {
   const { students, refetch } = useStudentsQuery();
@@ -16,6 +17,7 @@ const StudentTable = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [initialData, setInitialData] = useState(null);
    const [search, setSearch] = useState('');
+     const [successMessage, setSuccessMessage] = useState(null);
   const [filterValues, setFilterValues] = useState({
     Field: '',
     Course: '',
@@ -23,7 +25,7 @@ const StudentTable = () => {
   });
 
   // Define your table structure here
-  const tableHeaders = ['ID', 'Student Name', 'Email', 'Phone'];
+  const tableHeaders = ['ID', 'Student Name', 'Email', 'Phone', 'Actions'];
   
   const tableColumns = [
     { key: 'id' },
@@ -59,6 +61,7 @@ const StudentTable = () => {
   };
 
   const handleEdit = (student) => {
+    console.log(student)
     setInitialData(student);
     setIsOpen(true);
   };
@@ -67,6 +70,20 @@ const StudentTable = () => {
     update(formData.id, formData);
     refetch();
   };
+  const tableActions = [
+    {
+      icon: 'delete',
+      label: 'Approve Instructor',
+      handler:  (student) => handleDelete(student.id),
+      color: 'green'
+    },
+    {
+      icon: 'edit',
+      label: 'Edit Instructor',
+      handler: (student) => handleEdit(student),
+      color: 'green'
+    }
+  ];
 
   return (
     <div className="p-6 bg-gray-900 min-h-screen text-white">
@@ -76,15 +93,17 @@ const StudentTable = () => {
         initialData={initialData} 
         onSubmit={handleSubmitUpdate}
       />
+      <SuccessModal
+        isOpen={!!successMessage}
+        message={successMessage}
+        onClose={() => setSuccessMessage(null)}
+      />
       <h2 className="text-3xl font-semibold mb-6">Students</h2>
 
        <FilterBar
         search={search}
         setSearch={setSearch}
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onReset={handleReset}
-        isFilter={true}
+        isfilter={false}
       />
 
       <div className="mt-6">
@@ -95,6 +114,7 @@ const StudentTable = () => {
             columns={tableColumns}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            actions={tableActions}
           />
         </table>
       </div>

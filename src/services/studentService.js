@@ -5,7 +5,7 @@ export const fetchStudents = async () => {
   return res.data;
 };
 
-export const fetchStudent = async (id)=> {
+export const fetchStudent = async (id) => {
   const res = await axios.get(`/student/${id}`);
   return res.data;
 };
@@ -16,7 +16,7 @@ export const createStudent = async (data) => {
 };
 
 export const updateStudent = async ({ id, data }) => {
-  const res = await axios.put(`/users/${id}`, data);
+  const res = await axios.put(`/student/${id}`, data);
   return res.data;
 };
 

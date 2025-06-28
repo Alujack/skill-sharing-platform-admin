@@ -1,7 +1,7 @@
 import React from 'react';
 import { Filter, Search } from 'lucide-react';
 
-const FilterBar = ({ search, setSearch, filters = [], onFilterChange, onReset, isfilter }) => {
+const FilterBar = ({ search, setSearch, filters = [], onFilterChange, onReset, isfilter=true }) => {
   return (
     <div className="flex justify-between items-center bg-gray-800 p-4 rounded-lg">
       <div className="flex space-x-4 items-center">

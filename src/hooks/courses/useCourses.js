@@ -7,21 +7,21 @@ export const useCourses = (search = '', filters = {}) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCourses = async () => {
-      setLoading(true);
-      setError(null);
       try {
         const data = await getCourses(search, filters);
-        setCourses(data);
+        if (isMounted) setCourses(data);
       } catch (err) {
-        setError(err?.response?.data?.message || 'Failed to fetch courses');
+        if (isMounted) setError(err?.response?.data?.message || 'Failed to fetch courses');
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchCourses();
-  }, [search, filters]);
+    return () => { isMounted = false; };
+  }, [search, JSON.stringify(filters)]);
 
   return { courses, loading, error };
 };

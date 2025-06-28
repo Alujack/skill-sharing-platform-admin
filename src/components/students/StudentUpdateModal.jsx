@@ -20,7 +20,7 @@ const StudentUpdateModal = ({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'phone' ? Number(value) : value,
+      [name]: value,
     }));
   };
 
@@ -40,7 +40,7 @@ const StudentUpdateModal = ({
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={formData?.name}
               onChange={handleChange}
               className="w-full border p-2 rounded bg-white text-black"
               required
@@ -51,18 +51,7 @@ const StudentUpdateModal = ({
             <input
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border p-2 rounded bg-white text-black"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Phone</label>
-            <input
-              type="number"
-              name="phone"
-              value={formData.phone}
+              value={formData?.email}
               onChange={handleChange}
               className="w-full border p-2 rounded bg-white text-black"
               required
